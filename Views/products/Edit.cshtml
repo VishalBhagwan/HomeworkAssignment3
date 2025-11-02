@@ -1,0 +1,85 @@
+﻿@model HomeworkAssignment3.Models.product
+
+@{
+    ViewBag.Title = "Edit Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🚴 Edit Product</h2>
+        <div>
+            <a href="@Url.Action("Index", "Maintain")" class="btn btn-secondary">Back to Maintain</a>
+            <a href="@Url.Action("Index", "products")" class="btn btn-outline-primary">Back to Products</a>
+        </div>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.product_id)
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">Edit Product Information</h5>
+            </div>
+            <div class="card-body">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Product Name</label>
+                            @Html.TextBoxFor(model => model.product_name, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(model => model.product_name, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Brand</label>
+                            @Html.DropDownListFor(model => model.brand_id, (SelectList)ViewBag.brand_id, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(model => model.brand_id, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            @Html.DropDownListFor(model => model.category_id, (SelectList)ViewBag.category_id, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(model => model.category_id, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Model Year</label>
+                            @Html.TextBoxFor(model => model.model_year, new { @class = "form-control", type = "number", min = "2000", max = "2030", required = "required" })
+                            @Html.ValidationMessageFor(model => model.model_year, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">List Price (R)</label>
+                            @Html.TextBox("list_price", Model.list_price.ToString("F2"), new
+                            {
+                                @class = "form-control",
+                                type = "text",
+                                required = "required",
+                                placeholder = "999.99"
+                            })
+                            @Html.ValidationMessageFor(model => model.list_price, "", new { @class = "text-danger" })
+                            <small class="form-text text-muted">Enter price with decimals (e.g., 999.99)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <input type="submit" value="Save Changes" class="btn btn-primary" />
+                    <a href="@Url.Action("Index", "Maintain")" class="btn btn-secondary">Cancel</a>
+                    <a href="@Url.Action("Details", "products", new { id = Model.product_id })" class="btn btn-info">View Details</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

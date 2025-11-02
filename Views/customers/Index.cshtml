@@ -1,0 +1,90 @@
+﻿@model IEnumerable<HomeworkAssignment3.Models.customer>
+
+@{
+    ViewBag.Title = "Customers Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>👨‍💼 Customers Management</h2>
+        @Html.ActionLink("Create New Customer", "Create", null, new { @class = "btn btn-success" })
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Customer List</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Customer ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Street</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Zip Code</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item.customer_id)</td>
+                                <td>@Html.DisplayFor(modelItem => item.first_name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.last_name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.phone)</td>
+                                <td>@Html.DisplayFor(modelItem => item.email)</td>
+                                <td>@Html.DisplayFor(modelItem => item.street)</td>
+                                <td>@Html.DisplayFor(modelItem => item.city)</td>
+                                <td>@Html.DisplayFor(modelItem => item.state)</td>
+                                <td>@Html.DisplayFor(modelItem => item.zip_code)</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        @Html.ActionLink("Edit", "Edit", new { id = item.customer_id }, new { @class = "btn btn-warning" })
+                                        @Html.ActionLink("Details", "Details", new { id = item.customer_id }, new { @class = "btn btn-info" })
+                                        @Html.ActionLink("Delete", "Delete", new { id = item.customer_id }, new { @class = "btn btn-danger" })
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info text-center">
+                    <strong>No customers found.</strong> Click "Create New Customer" to add the first customer.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-3">
+        @Html.ActionLink("Back to Home", "Index", "Home", null, new { @class = "btn btn-secondary" })
+        @Html.ActionLink("Back to Maintain", "Index", "Maintain", null, new { @class = "btn btn-outline-primary" })
+    </div>
+</div>
+
+<style>
+    .table th {
+        background-color: #343a40;
+        color: white;
+        font-weight: 600;
+    }
+
+    .btn-group .btn {
+        margin: 0 1px;
+    }
+
+    .table-responsive {
+        border-radius: 0.375rem;
+    }
+</style>

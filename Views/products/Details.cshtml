@@ -1,0 +1,57 @@
+﻿@model HomeworkAssignment3.Models.product
+
+@{
+    ViewBag.Title = "Product Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🚴 Product Details</h2>
+        <div>
+            @Html.ActionLink("Edit", "Edit", new { id = Model.product_id }, new { @class = "btn btn-warning" })
+            @Html.ActionLink("Back to Maintain", "Index", "Maintain", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Product Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Product ID</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.product_id)</dd>
+
+                        <dt class="col-sm-4">Product Name</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.product_name)</dd>
+
+                        <dt class="col-sm-4">Brand</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.brand.brand_name)</dd>
+
+                        <dt class="col-sm-4">Category</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.category.category_name)</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Model Year</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.model_year)</dd>
+
+                        <dt class="col-sm-4">List Price</dt>
+                        <dd class="col-sm-8">R @Html.DisplayFor(model => model.list_price)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        @Html.ActionLink("Edit Product", "Edit", new { id = Model.product_id }, new { @class = "btn btn-warning" })
+        @Html.ActionLink("Back to Product List", "Index", "products", null, new { @class = "btn btn-outline-primary" })
+        @Html.ActionLink("Back to Maintain", "Index", "Maintain", null, new { @class = "btn btn-outline-secondary" })
+        @Html.ActionLink("Back to Home", "Index", "Home", null, new { @class = "btn btn-outline-info" })
+    </div>
+</div>

@@ -1,0 +1,93 @@
+﻿@model HomeworkAssignment3.Models.staff
+
+@{
+    ViewBag.Title = "Edit Staff";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>👥 Edit Staff</h2>
+        <div>
+            @Html.ActionLink("Back to Maintain", "Index", "Maintain", null, new { @class = "btn btn-secondary" })
+            @Html.ActionLink("Back to Staff", "Index", "staffs", null, new { @class = "btn btn-outline-primary" })
+        </div>
+    </div>
+
+    @using (Html.BeginForm("Edit", "staffs", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">Edit Staff Information</h5>
+            </div>
+            <div class="card-body">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.staff_id)
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.first_name, "First Name", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.EditorFor(model => model.first_name, new { htmlAttributes = new { @class = "form-control", required = "required" } })
+                            @Html.ValidationMessageFor(model => model.first_name, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.last_name, "Last Name", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.EditorFor(model => model.last_name, new { htmlAttributes = new { @class = "form-control", required = "required" } })
+                            @Html.ValidationMessageFor(model => model.last_name, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.email, "Email", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control", type = "email", required = "required" } })
+                            @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.phone, "Phone", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.EditorFor(model => model.phone, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.phone, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.active, "Active", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.DropDownListFor(model => model.active, new SelectList(new[] {
+                                new SelectListItem { Text = "Yes", Value = "1" },
+                                new SelectListItem { Text = "No", Value = "0" }
+                            }, "Value", "Text"), htmlAttributes: new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(model => model.active, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.store_id, "Store", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.DropDownList("store_id", null, htmlAttributes: new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(model => model.store_id, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.manager_id, "Manager", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.DropDownList("manager_id", null, "Select Manager", htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.manager_id, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <input type="submit" value="Save Changes" class="btn btn-primary" />
+                    @Html.ActionLink("Cancel", "Index", "Maintain", null, new { @class = "btn btn-secondary" })
+                    @Html.ActionLink("View Details", "Details", new { id = Model.staff_id }, new { @class = "btn btn-info" })
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
