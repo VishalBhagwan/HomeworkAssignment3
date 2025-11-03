@@ -12,7 +12,7 @@
     <h2 class="text-center mb-4">🏠 BikeStores Dashboard</h2>
 
     <div class="row">
-        <!-- ================= STAFF SECTION ================= -->
+        <!-- Staff -->
         <div class="col-md-4">
             <div class="card p-3">
                 <h4>
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <!-- ================= CUSTOMERS SECTION ================= -->
+        <!-- Customers -->
         <div class="col-md-4">
             <div class="card p-3">
                 <h4>
@@ -84,6 +84,7 @@
                     <div class="mb-2"><label>State</label><input class="form-control" value="@c.state" readonly /></div>
                     <div class="mb-2"><label>Zip Code</label><input class="form-control" value="@c.zip_code" readonly /></div>
 
+                    <!-- Paging -->
                     <div class="d-flex justify-content-center">
                         <nav>
                             <ul class="pagination pagination-sm">
@@ -113,14 +114,11 @@
             </div>
         </div>
 
-        <!-- ================= PRODUCTS SECTION ================= -->
+        <!-- Products -->
         <div class="col-md-4">
             <div class="card p-3">
                 <h4>
                     🚴 Products
-                    <button class="btn btn-info btn-sm float-end" data-bs-toggle="modal" data-bs-target="#createProductModal">
-                        Create
-                    </button>
                 </h4>
                 <form method="get" id="filterForm">
                     <div class="row mb-2">
@@ -157,20 +155,17 @@
                         <div class="mb-2"><label>Price</label><input class="form-control" value="R @p.list_price" readonly /></div>
                         <div class="text-center">
                             @{
-                                // Get the random image for this product
+                                // Get the image for this product
                                 string imagePath = Model.ProductImages.ContainsKey(p.product_id)
                                     ? Model.ProductImages[p.product_id]
-                                    : "~/Content/Bikes-Images/bike1.jpg"; // Fallback image
+                                    : "~/Content/Bikes-Images/bike1.jpg"; 
                             }
                             <img src="@Url.Content(imagePath)" class="img-fluid border rounded" style="max-height: 150px; object-fit: cover;"
                                  alt="@p.product_name"
                                  onerror="this.src='@Url.Content("~/Content/Bikes-Images/bike1.jpg")'" />
-                            <div class="mt-1">
-                                <small class="text-muted">Random bike image assigned</small>
-                            </div>
                         </div>
 
-                        <!-- Product Paging -->
+                        <!-- Paging -->
                         <div class="d-flex justify-content-center mt-2">
                             <nav>
                                 <ul class="pagination pagination-sm">
@@ -209,8 +204,8 @@
     </div>
 </div>
 
-<!-- ================= CREATE MODALS ================= -->
-<!-- Create Staff Modal -->
+<!-- Modals -->
+<!-- Create staff modal -->
 <div class="modal fade" id="createStaffModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -271,7 +266,7 @@
     </div>
 </div>
 
-<!-- Create Customer Modal -->
+<!-- Create customer modal -->
 <div class="modal fade" id="createCustomerModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -331,71 +326,10 @@
     </div>
 </div>
 
-<!-- Create Product Modal -->
-<div class="modal fade" id="createProductModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Create New Product</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            @using (Html.BeginForm("Create", "products", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label fw-bold">Product Name</label>
-                                <input type="text" class="form-control" name="product_name" required />
-                            </div>
-                            <div class="form-group mb-3">
-                                <label class="form-label fw-bold">Brand</label>
-                                <select class="form-select" name="brand_id" required>
-                                    <option value="">Select Brand</option>
-                                    @foreach (var brand in ViewBag.Brands as SelectList ?? new SelectList(new List<string>()))
-                                    {
-                                        <option value="@brand.Value">@brand.Text</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label class="form-label fw-bold">Category</label>
-                                <select class="form-select" name="category_id" required>
-                                    <option value="">Select Category</option>
-                                    @foreach (var category in ViewBag.Categories as SelectList ?? new SelectList(new List<string>()))
-                                    {
-                                        <option value="@category.Value">@category.Text</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label fw-bold">Model Year</label>
-                                <input type="number" class="form-control" name="model_year" min="2000" max="2030" required />
-                            </div>
-                            <div class="form-group mb-3">
-                                <label class="form-label fw-bold">List Price (R)</label>
-                                <input type="text" class="form-control" name="list_price" placeholder="999.99" required />
-                                <small class="form-text text-muted">Enter price with decimals (e.g., 999.99)</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-info">Create Product</button>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
 <script>
     // Initialize modals and handle form submissions
     document.addEventListener('DOMContentLoaded', function () {
-        // Clear form when modal is hidden
+        // Clear form when modal is closed
         var modals = document.querySelectorAll('.modal');
         modals.forEach(function (modal) {
             modal.addEventListener('hidden.bs.modal', function () {
@@ -406,7 +340,6 @@
             });
         });
 
-        // Format price fields on blur
         var priceFields = document.querySelectorAll('input[name="list_price"]');
         priceFields.forEach(function (field) {
             field.addEventListener('blur', function () {

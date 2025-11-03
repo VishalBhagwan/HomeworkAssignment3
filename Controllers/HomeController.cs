@@ -19,7 +19,7 @@ namespace HomeworkAssignment3.Controllers
         {
             const int pageSize = 1;
 
-            // Staff paging
+            // Data retreival
             var totalStaff = await db.staffs.CountAsync();
             var staffList = await db.staffs
                 .Include(s => s.store)
@@ -28,7 +28,6 @@ namespace HomeworkAssignment3.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Customer paging
             var totalCustomers = await db.customers.CountAsync();
             var customerList = await db.customers
                 .OrderBy(c => c.customer_id)
@@ -36,7 +35,7 @@ namespace HomeworkAssignment3.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Products + filtering with paging
+            // Product filtering
             var productsQuery = db.products.Include(p => p.brand).Include(p => p.category);
 
             if (!string.IsNullOrEmpty(brandFilter))
@@ -51,7 +50,6 @@ namespace HomeworkAssignment3.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Generate random images for ALL products (not just the current page)
             var allProducts = await productsQuery.ToListAsync();
             var productImages = AssignRandomImagesToProducts(allProducts);
 
@@ -81,13 +79,14 @@ namespace HomeworkAssignment3.Controllers
             return View(vm);
         }
 
+        // Assign images to the bikes
         private Dictionary<int, string> AssignRandomImagesToProducts(List<product> products)
         {
             var productImages = new Dictionary<int, string>();
 
             foreach (var product in products)
             {
-                // Deterministic assignment based on product_id (same image every time)
+                // Product gets the same image everytime
                 int imageNumber = (Math.Abs(product.product_id.GetHashCode()) % 18) + 1;
 
                 string imagePath = $"~/Content/Bike-Images/bike{imageNumber}.jpeg";
@@ -97,7 +96,7 @@ namespace HomeworkAssignment3.Controllers
             return productImages;
         }
 
-
+        // Gets the lists to display in the dropdowns
         private async Task<SelectList> GetStoresListAsync()
         {
             try
