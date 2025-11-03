@@ -5,7 +5,7 @@ namespace HomeworkAssignment3.Models
 {
     public class HomeViewModel
     {
-        // Data collections
+        // Data collection
         public List<staff> StaffList { get; set; }
         public List<customer> CustomerList { get; set; }
         public List<product> ProductList { get; set; }

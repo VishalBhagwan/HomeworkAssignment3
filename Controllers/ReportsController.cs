@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using System.Data.Entity;
 using System.IO;
 using System.Text;
+using System.Web.Hosting;
 
 namespace HomeworkAssignment3.Controllers
 {
@@ -25,7 +26,7 @@ namespace HomeworkAssignment3.Controllers
                     Directory.CreateDirectory(ReportFolderPath);
                 }
 
-                // Stock Items Report: Products available but not yet sold - FIXED QUERY
+                // Stock Items Report: Products available but not yet sold
                 var stockItemsReport = GetStockItemsReport();
                 ViewBag.StockItems = stockItemsReport;
 
@@ -39,6 +40,9 @@ namespace HomeworkAssignment3.Controllers
                 ViewBag.TopSellingProduct = popularProductsReport.FirstOrDefault()?.ProductName ?? "No sales data";
                 ViewBag.TotalOrders = popularProductsReport.Sum(p => p.OrderCount);
 
+                // Get chart data
+                ViewBag.ChartData = GetChartData(stockItemsReport, popularProductsReport);
+
                 // Get saved reports for archive
                 ViewBag.SavedReports = GetSavedReports();
 
@@ -49,7 +53,6 @@ namespace HomeworkAssignment3.Controllers
                 // Fallback data if there's an error
                 ViewBag.Error = "Error generating reports: " + ex.Message;
 
-                // Create demo data for fallback
                 ViewBag.StockItems = GetDemoStockItems();
                 ViewBag.PopularProducts = GetDemoPopularProducts();
                 ViewBag.TotalProductsInStock = 15;
@@ -62,6 +65,77 @@ namespace HomeworkAssignment3.Controllers
             }
         }
 
+        #region Chart Data Methods
+
+        private ChartData GetChartData(List<StockItemReport> stockItems, List<PopularProductReport> popularProducts)
+        {
+            var chartData = new ChartData();
+
+            // Stock by Category Data
+            chartData.StockByCategory = stockItems
+                .GroupBy(s => s.CategoryName)
+                .Select(g => new ChartItem
+                {
+                    Label = g.Key,
+                    Value = g.Count()
+                })
+                .ToList();
+
+            // Top Products Data
+            chartData.TopProducts = popularProducts
+                .Take(5)
+                .Select(p => new ChartItem
+                {
+                    Label = p.ProductName,
+                    Value = p.OrderCount
+                })
+                .ToList();
+
+            // Brand Performance Data
+            chartData.BrandPerformance = popularProducts
+                .GroupBy(p => p.BrandName)
+                .Select(g => new ChartItem
+                {
+                    Label = g.Key,
+                    Value = (int)g.Sum(p => p.TotalRevenue)
+                })
+                .OrderByDescending(x => x.Value)
+                .Take(5)
+                .ToList();
+
+            // Price vs Stock Data
+            chartData.PriceStockData = stockItems
+                .Select(s => new PriceStockPoint
+                {
+                    Price = (double)s.ListPrice,
+                    Stock = s.QuantityInStock,
+                    ProductName = s.ProductName
+                })
+                .ToList();
+
+            return chartData;
+        }
+
+        // JSON endpoint for chart data
+        public JsonResult GetChartDataJson()
+        {
+            try
+            {
+                var stockItems = GetStockItemsReport();
+                var popularProducts = GetPopularProductsReport();
+                var chartData = GetChartData(stockItems, popularProducts);
+
+                return Json(chartData, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        #endregion
+
+        // ... (Rest of your existing methods remain the same)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ExportReport(string fileName, string fileType, string reportType)
@@ -82,14 +156,12 @@ namespace HomeworkAssignment3.Controllers
                 switch (fileType.ToLower())
                 {
                     case "pdf":
-                        // Generate simple text-based PDF content
                         fileContents = ExportToPdf(reportType, fileName);
                         contentType = "application/pdf";
                         fileExtension = ".pdf";
                         actualFileType = "PDF";
                         break;
                     case "excel":
-                        // Use CSV format but with Excel content type
                         fileContents = ExportToCsv(reportType, fileName);
                         contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                         fileExtension = ".xlsx";
@@ -107,10 +179,7 @@ namespace HomeworkAssignment3.Controllers
                         return RedirectToAction("Index");
                 }
 
-                // Save file to archive with correct extension
                 SaveReportToArchive(fileName + fileExtension, actualFileType, reportType, fileContents);
-
-                // Return file for download
                 return File(fileContents, contentType, fileName + fileExtension);
             }
             catch (Exception ex)
@@ -173,7 +242,6 @@ namespace HomeworkAssignment3.Controllers
         {
             try
             {
-                // Get products that have stock but no order items
                 var productIdsInOrders = db.order_items.Select(oi => oi.product_id).Distinct();
 
                 var unsoldProducts = (from p in db.products
@@ -199,7 +267,6 @@ namespace HomeworkAssignment3.Controllers
             }
             catch (Exception ex)
             {
-                // Return demo data if query fails
                 return GetDemoStockItems();
             }
         }
@@ -208,7 +275,6 @@ namespace HomeworkAssignment3.Controllers
         {
             try
             {
-                // Count how many times each product appears in order items
                 var popularProducts = (from oi in db.order_items
                                        join p in db.products on oi.product_id equals p.product_id
                                        group oi by new
@@ -240,7 +306,6 @@ namespace HomeworkAssignment3.Controllers
             }
             catch (Exception ex)
             {
-                // Return demo data if query fails
                 return GetDemoPopularProducts();
             }
         }
@@ -253,13 +318,11 @@ namespace HomeworkAssignment3.Controllers
         {
             try
             {
-                // Create a simple text-based PDF content
                 string pdfContent = GeneratePdfContent(reportType);
                 return Encoding.UTF8.GetBytes(pdfContent);
             }
             catch (Exception ex)
             {
-                // Fallback to CSV if PDF generation fails
                 return ExportToCsv(reportType, fileName);
             }
         }
@@ -416,7 +479,29 @@ namespace HomeworkAssignment3.Controllers
         #endregion
     }
 
-    // Report Model Classes
+    // Chart Data Models
+    public class ChartData
+    {
+        public List<ChartItem> StockByCategory { get; set; }
+        public List<ChartItem> TopProducts { get; set; }
+        public List<ChartItem> BrandPerformance { get; set; }
+        public List<PriceStockPoint> PriceStockData { get; set; }
+    }
+
+    public class ChartItem
+    {
+        public string Label { get; set; }
+        public int Value { get; set; }
+    }
+
+    public class PriceStockPoint
+    {
+        public double Price { get; set; }
+        public int Stock { get; set; }
+        public string ProductName { get; set; }
+    }
+
+    // Existing Report Model Classes
     public class StockItemReport
     {
         public int ProductId { get; set; }

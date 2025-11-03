@@ -17,7 +17,7 @@ namespace HomeworkAssignment3.Controllers
         {
             try
             {
-                // Simple data loading without async/await
+                // Load data
                 var staffList = db.staffs
                     .Include(s => s.store)
                     .Include(s => s.staff1)
@@ -30,7 +30,7 @@ namespace HomeworkAssignment3.Controllers
                     .Include(p => p.category)
                     .ToList();
 
-                // Create simple dropdown lists
+                // Dropdown lists
                 ViewBag.Stores = GetStoresList();
                 ViewBag.Brands = GetBrandsList();
                 ViewBag.Categories = GetCategoriesList();
@@ -62,6 +62,7 @@ namespace HomeworkAssignment3.Controllers
             }
         }
 
+        // Dropdowns when used to edit
         private List<SelectListItem> GetStoresList()
         {
             try

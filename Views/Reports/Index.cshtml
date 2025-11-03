@@ -7,10 +7,13 @@
     var savedReports = ViewBag.SavedReports as List<HomeworkAssignment3.Controllers.SavedReport> ?? new List<HomeworkAssignment3.Controllers.SavedReport>();
 }
 
+<!-- Add Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <div class="container mt-4">
     <h2 class="text-center mb-4">📊 Inventory Reports & Analytics</h2>
 
-    <!-- Display Messages -->
+    <!-- Display messages -->
     @if (ViewBag.Error != null)
     {
         <div class="alert alert-warning">
@@ -39,7 +42,7 @@
         </div>
     }
 
-    <!-- Export Reports Section -->
+    <!-- Export reports -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">💾 Export Reports</h5>
@@ -78,48 +81,124 @@
         </div>
     </div>
 
-    <!-- Summary Statistics -->
+    <!-- Graphical Dashboard Section -->
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary">
+        <!-- Summary Statistics Cards -->
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Total Unsold Stock</h5>
-                    <h3 class="card-text">@ViewBag.TotalProductsInStock</h3>
-                    <p class="card-text">Products in inventory</p>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Unsold Stock</h5>
+                            <h3 class="card-text">@ViewBag.TotalProductsInStock</h3>
+                            <p class="card-text">Products in inventory</p>
+                        </div>
+                        <div class="display-4">📦</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Stock Value</h5>
-                    <h3 class="card-text">R @(ViewBag.TotalStockValue?.ToString("N2") ?? "0.00")</h3>
-                    <p class="card-text">Total inventory value</p>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Stock Value</h5>
+                            <h3 class="card-text">R @(ViewBag.TotalStockValue?.ToString("N2") ?? "0.00")</h3>
+                            <p class="card-text">Total inventory value</p>
+                        </div>
+                        <div class="display-4">💰</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Top Seller</h5>
-                    <h6 class="card-text">@ViewBag.TopSellingProduct</h6>
-                    <p class="card-text">Most popular product</p>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Top Seller</h5>
+                            <h6 class="card-text">@ViewBag.TopSellingProduct</h6>
+                            <p class="card-text">Most popular product</p>
+                        </div>
+                        <div class="display-4">🏆</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Total Orders</h5>
-                    <h3 class="card-text">@ViewBag.TotalOrders</h3>
-                    <p class="card-text">Units sold</p>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Total Orders</h5>
+                            <h3 class="card-text">@ViewBag.TotalOrders</h3>
+                            <p class="card-text">Units sold</p>
+                        </div>
+                        <div class="display-4">📈</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <!-- Stock by Category Chart -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">📊 Stock Distribution by Category</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="stockByCategoryChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products Chart -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">🏆 Top Selling Products</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="topProductsChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Charts -->
+    <div class="row mb-4">
+        <!-- Brand Performance Chart -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">🏷️ Brand Performance</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="brandPerformanceChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Price vs Stock Analysis -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">⚖️ Price vs Stock Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="priceStockChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Tables Section -->
     <div class="row">
-        <!-- Stock Items Report -->
+        <!-- Stock items report -->
         <div class="col-lg-6">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-warning text-white">
@@ -179,7 +258,7 @@
             </div>
         </div>
 
-        <!-- Popular Products Report -->
+        <!-- Popular products report -->
         <div class="col-lg-6">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-success text-white">
@@ -260,7 +339,7 @@
         </div>
     </div>
 
-    <!-- Document Archive Section -->
+    <!-- Document archive section -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -354,4 +433,165 @@
     .btn-group .btn {
         margin-right: 5px;
     }
+
+    .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Sample data for charts - in a real application, this would come from the controller
+        const stockByCategoryData = {
+            labels: ['Mountain Bikes', 'Road Bikes', 'Cruisers', 'BMX Bikes', 'City Bikes'],
+            datasets: [{
+                data: [12, 19, 8, 5, 7],
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF'
+                ]
+            }]
+        };
+
+        const topProductsData = {
+            labels: ['Trek Speedster', 'Electra Cruiser', 'Haro BMX Pro', 'Pure Cycles Urban', 'Surly Mountain'],
+            datasets: [{
+                label: 'Units Sold',
+                data: [65, 59, 80, 81, 56],
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const brandPerformanceData = {
+            labels: ['Trek', 'Electra', 'Haro', 'Pure Cycles', 'Surly'],
+            datasets: [{
+                label: 'Revenue (R)',
+                data: [125000, 98000, 76000, 54000, 32000],
+                backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const priceStockData = {
+            datasets: [{
+                label: 'Products',
+                data: [
+                    { x: 1200, y: 5 },
+                    { x: 450, y: 3 },
+                    { x: 350, y: 8 },
+                    { x: 800, y: 2 },
+                    { x: 1500, y: 1 },
+                    { x: 600, y: 6 },
+                    { x: 950, y: 4 }
+                ],
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        // Initialize charts
+        new Chart(document.getElementById('stockByCategoryChart'), {
+            type: 'pie',
+            data: stockByCategoryData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Stock Distribution by Category'
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('topProductsChart'), {
+            type: 'bar',
+            data: topProductsData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Top 5 Selling Products'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Units Sold'
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('brandPerformanceChart'), {
+            type: 'bar',
+            data: brandPerformanceData,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Revenue by Brand'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return 'R ' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('priceStockChart'), {
+            type: 'scatter',
+            data: priceStockData,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Price vs Stock Quantity'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Price (R)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Stock Quantity'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>

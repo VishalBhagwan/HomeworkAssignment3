@@ -7,6 +7,7 @@ namespace HomeworkAssignment3.Models
 {
     public class MaintainViewModel
     {
+        // Data collection
         public List<staff> StaffList { get; set; }
         public List<customer> CustomerList { get; set; }
         public List<product> ProductList { get; set; }
